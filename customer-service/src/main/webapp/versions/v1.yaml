@@ -1,0 +1,220 @@
+---
+openapi: "3.0.1"
+info:
+  title: "Customer Service"
+  termsOfService: ""
+  contact:
+    name: "open knowledge GmbH"
+    email: "info@openknowledge.de"
+    url: "http://www.openknowledge.de"
+  license:
+    name: "Apache License, Version 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0"
+  version: "1"
+  description: "A customer service"
+paths:
+  /api/customers/{id}:
+    get:
+      operationId: "getCustomer"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: "object"
+                $ref: "#/components/schemas/Customer"
+            application/vnd.ok.customer.v1+json:
+              schema:
+                type: "object"
+                $ref: "#/components/schemas/Customer"
+          description: "default response"
+        default:
+          content:
+            application/json:
+              schema:
+                type: "object"
+                $ref: "#/components/schemas/Customer"
+            application/vnd.ok.customer.v1+json:
+              schema:
+                type: "object"
+                $ref: "#/components/schemas/Customer"
+          description: "default response"
+      parameters:
+      - style: "simple"
+        required: true
+        name: "id"
+        in: "path"
+        schema:
+          nullable: true
+          type: "integer"
+    put:
+      operationId: "updateCustomer"
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                nullable: true
+                properties: {}
+                type: "object"
+          description: "default response"
+        default:
+          content:
+            '*/*':
+              schema:
+                nullable: true
+                properties: {}
+                type: "object"
+          description: "default response"
+      parameters:
+      - style: "simple"
+        required: true
+        name: "id"
+        in: "path"
+        schema:
+          nullable: true
+          type: "integer"
+      requestBody:
+        content:
+          application/vnd.ok.customer.v1+json:
+            schema:
+              type: "object"
+              $ref: "#/components/schemas/Customer"
+          application/json:
+            schema:
+              type: "object"
+              $ref: "#/components/schemas/Customer"
+        required: false
+    delete:
+      operationId: "deleteCustomer"
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                nullable: true
+                properties: {}
+                type: "object"
+          description: "default response"
+        default:
+          content:
+            '*/*':
+              schema:
+                nullable: true
+                properties: {}
+                type: "object"
+          description: "default response"
+      parameters:
+      - style: "simple"
+        required: true
+        name: "id"
+        in: "path"
+        schema:
+          nullable: true
+          type: "integer"
+  /api/customers:
+    get:
+      operationId: "getCustomers"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  type: "object"
+                  $ref: "#/components/schemas/Customer"
+                type: "array"
+            application/vnd.ok.customer.v1+json:
+              schema:
+                items:
+                  type: "object"
+                  $ref: "#/components/schemas/Customer"
+                type: "array"
+          description: "default response"
+        default:
+          content:
+            application/json:
+              schema:
+                items:
+                  type: "object"
+                  $ref: "#/components/schemas/Customer"
+                type: "array"
+            application/vnd.ok.customer.v1+json:
+              schema:
+                items:
+                  type: "object"
+                  $ref: "#/components/schemas/Customer"
+                type: "array"
+          description: "default response"
+      parameters: []
+    post:
+      operationId: "createCustomer"
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                nullable: true
+                properties: {}
+                type: "object"
+          description: "default response"
+        default:
+          content:
+            '*/*':
+              schema:
+                nullable: true
+                properties: {}
+                type: "object"
+          description: "default response"
+      parameters: []
+      requestBody:
+        content:
+          application/vnd.ok.customer.v1+json:
+            schema:
+              type: "object"
+              $ref: "#/components/schemas/Customer"
+          application/json:
+            schema:
+              type: "object"
+              $ref: "#/components/schemas/Customer"
+        required: false
+components:
+  schemas:
+    Customer:
+      properties:
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        emailAddress:
+          type: "string"
+        gender:
+          nullable: true
+          type: "string"
+          enum:
+          - "FEMALE"
+          - "MALE"
+          - "UNSPECIFIED"
+        name:
+          type: "object"
+          $ref: "#/components/schemas/CustomerName"
+        id:
+          nullable: true
+          readOnly: true
+          type: "integer"
+      type: "object"
+    CustomerName:
+      properties:
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+      type: "object"
+  requestBodies:
+    Customer:
+      content:
+        '*/*':
+          schema:
+            type: "object"
+            $ref: "#/components/schemas/Customer"
+      required: false

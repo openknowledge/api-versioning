@@ -21,6 +21,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Default;
+import javax.enterprise.util.AnnotationLiteral;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -31,12 +33,13 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 
 /**
- * Message body reader that transforms media type 'application/vnd.de.openknowledge.sample.customer.v1+json'
- * to an entity of {@link CustomerResourceType}.
+ * Message body reader that transforms media type
+ * 'application/vnd.de.openknowledge.sample.customer.v2+json' to an entity of
+ * {@link CustomerResourceType}.
  */
 @Provider
 @RequestScoped
-@Consumes(CustomMediaType.CUSTOMER_V1)
+@Consumes(CustomMediaType.CUSTOMER_V2)
 public class CustomerMessageBodyReader implements MessageBodyReader<CustomerResourceType> {
 
     @Context
@@ -48,28 +51,21 @@ public class CustomerMessageBodyReader implements MessageBodyReader<CustomerReso
     }
 
     @Override
-    public CustomerResourceType readFrom(
-            Class<CustomerResourceType> type,
-            Type genericType,
-            Annotation[] annotations,
-            MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders,
-            InputStream entityStream
-    ) throws IOException, WebApplicationException {
+    public CustomerResourceType readFrom(Class<CustomerResourceType> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+            throws IOException, WebApplicationException {
 
-        MessageBodyReader<CustomerResourceType> jsonReader = providers.getMessageBodyReader(
-                CustomerResourceType.class,
-                CustomerResourceType.class,
-                annotations,
-                MediaType.APPLICATION_JSON_TYPE);
+        MessageBodyReader<CustomerResourceType> jsonReader = providers.getMessageBodyReader(CustomerResourceType.class,
+                CustomerResourceType.class, addDefaultAnnotation(annotations), MediaType.APPLICATION_JSON_TYPE);
 
-        return jsonReader.readFrom(
-                CustomerResourceType.class,
-                CustomerResourceType.class,
-                annotations,
-                MediaType.APPLICATION_JSON_TYPE,
-                httpHeaders,
-                entityStream
-        );
+        return jsonReader.readFrom(CustomerResourceType.class, CustomerResourceType.class, annotations,
+                MediaType.APPLICATION_JSON_TYPE, httpHeaders, entityStream);
+    }
+
+    private Annotation[] addDefaultAnnotation(Annotation[] annotations) {
+        Annotation[] newAnnotations = new Annotation[annotations.length + 1];
+        System.arraycopy(annotations, 0, newAnnotations, 1, annotations.length);
+        newAnnotations[0] = new AnnotationLiteral<Default>() {};
+        return newAnnotations;
     }
 }

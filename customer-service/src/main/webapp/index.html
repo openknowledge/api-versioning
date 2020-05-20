@@ -39,7 +39,16 @@
     window.onload = function() {
       // Begin Swagger UI call region
       const ui = SwaggerUIBundle({
-        url: "http://localhost:8080/api/openapi",
+        urls: [
+        	{
+            	name: "Version 2",
+            	url: "http://localhost:8080/api/openapi"
+        	},
+        	{
+            	name: "Version 1",
+            	url: "http://localhost:8080/versions/v1.yaml"
+        	}
+        ],
         dom_id: '#swagger-ui',
         deepLinking: true,
         presets: [

@@ -49,6 +49,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import de.openknowledge.sample.customer.application.v1.CustomerResourceTypeV1;
 import de.openknowledge.sample.customer.domain.Customer;
 import de.openknowledge.sample.customer.domain.CustomerNotFoundException;
 import de.openknowledge.sample.customer.domain.CustomerRepository;
@@ -71,6 +72,7 @@ public class CustomerResourceV11IntegrationTest {
 
         WebArchive archive = ShrinkWrap.create(WebArchive.class)
                 .addAsLibraries(pomFile.resolve("org.apache.commons:commons-lang3").withTransitivity().asFile())
+                .addPackage(CustomerResourceTypeV1.class.getPackage())
                 .addClasses(CustomerResource.class, CustomerResourceType.class, CustomMediaType.class, JaxRsActivator.class)
                 .addClasses(CustomerMessageBodyReader.class, CustomerMessageBodyWriter.class, CustomerListMessageBodyWriter.class)
                 .addClasses(Customer.class, Name.class, CustomerRepository.class, CustomerNotFoundException.class, Gender.class)

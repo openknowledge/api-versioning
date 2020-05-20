@@ -15,9 +15,8 @@
  */
 package de.openknowledge.sample.customer.application;
 
-import static de.openknowledge.sample.customer.application.CustomMediaType.CUSTOMER_V1;
+import static de.openknowledge.sample.customer.application.CustomMediaType.CUSTOMER_V2;
 import static javax.ws.rs.client.Entity.entity;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.InputStream;
@@ -62,9 +61,9 @@ import de.openknowledge.sample.customer.domain.TestCustomers;
  */
 @RunAsClient
 @RunWith(Arquillian.class)
-public class CustomerResourceV10IntegrationTest {
+public class CustomerResourceV20IntegrationTest {
 
-    private static final Logger LOG = Logger.getLogger(CustomerResourceV10IntegrationTest.class.getName());
+    private static final Logger LOG = Logger.getLogger(CustomerResourceV20IntegrationTest.class.getName());
 
     @Deployment
     public static WebArchive createDeployment() {
@@ -98,58 +97,28 @@ public class CustomerResourceV10IntegrationTest {
     @Test
     public void createCustomer() throws Exception {
         Response response = customerListTarget
-                .request(CUSTOMER_V1)
-                .post(entity(getClass().getResourceAsStream("customer_v1_0.json"), CUSTOMER_V1));
+                .request(CUSTOMER_V2)
+                .post(entity(getClass().getResourceAsStream("customer_v2_0.json"), CUSTOMER_V2));
 
         assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.CREATED);
         assertThat(response.getLocation()).isEqualTo(customerListTarget.path(Long.toString(2)).getUri());
     }
 
     @Test
-    public void createCustomerWithJsonType() throws Exception {
-        Response response = customerListTarget
-                .request(APPLICATION_JSON)
-                .post(entity(getClass().getResourceAsStream("customer_v1_0.json"), CUSTOMER_V1));
-
-        assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.CREATED);
-        assertThat(response.getLocation()).isEqualTo(customerListTarget.path(Long.toString(2)).getUri());
-    }
-
-    @Test
-    public void deleteCustomer() throws Exception {
+    public void deleteCustomerV1() throws Exception {
         Response response = customerListTarget
                 .path(Long.toString(1))
-                .request(CUSTOMER_V1)
+                .request(CUSTOMER_V2)
                 .delete();
 
         assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.NO_CONTENT);
     }
 
     @Test
-    public void deleteCustomerWithJsonType() throws Exception {
-        Response response = customerListTarget
-                .path(Long.toString(1))
-                .request(APPLICATION_JSON)
-                .delete();
-
-        assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.NO_CONTENT);
-    }
-
-    @Test
-    public void deleteCustomerShouldFailUnknownCustomer() throws Exception {
+    public void deleteCustomerV1ShouldFailUnknownCustomer() throws Exception {
         Response response = customerListTarget
                 .path(Long.toString(-1))
-                .request(CUSTOMER_V1)
-                .delete();
-
-        assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.NOT_FOUND);
-    }
-
-    @Test
-    public void deleteCustomerWithJsonTypeShouldFailUnknownCustomer() throws Exception {
-        Response response = customerListTarget
-                .path(Long.toString(-1))
-                .request(APPLICATION_JSON)
+                .request(CUSTOMER_V2)
                 .delete();
 
         assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.NOT_FOUND);
@@ -159,45 +128,21 @@ public class CustomerResourceV10IntegrationTest {
     public void getCustomer() throws Exception {
         Response response = customerListTarget
                 .path(Long.toString(1))
-                .request(CUSTOMER_V1)
+                .request(CUSTOMER_V2)
                 .get();
 
         assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.OK);
 
         JsonObject customer = parse(response.readEntity(String.class));
         assertThat(customer).isNotNull();
-        assertThat(customer).containsAllEntriesOf(parse(getClass().getResourceAsStream("customer_v1_0.json")));
+        assertThat(customer).containsAllEntriesOf(parse(getClass().getResourceAsStream("customer_v2_0.json")));
     }
 
     @Test
-    public void getCustomerWithJsonType() throws Exception {
-        Response response = customerListTarget
-                .path(Long.toString(1))
-                .request(APPLICATION_JSON)
-                .get();
-
-        assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.OK);
-
-        JsonObject customer = parse(response.readEntity(String.class));
-        assertThat(customer).isNotNull();
-        assertThat(customer).containsAllEntriesOf(parse(getClass().getResourceAsStream("customer_v1_0.json")));
-    }
-
-    @Test
-    public void getCustomerShouldFailForUnknownCustomer() throws Exception {
+    public void getCustomerV1ShouldFailForUnknownCustomer() throws Exception {
         Response response = customerListTarget
                 .path(Long.toString(-1))
-                .request(CUSTOMER_V1)
-                .get(Response.class);
-
-        assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.NOT_FOUND);
-    }
-
-    @Test
-    public void getCustomerWithJsonTypeShouldFailForUnknownCustomer() throws Exception {
-        Response response = customerListTarget
-                .path(Long.toString(-1))
-                .request(APPLICATION_JSON)
+                .request(CUSTOMER_V2)
                 .get(Response.class);
 
         assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.NOT_FOUND);
@@ -206,7 +151,7 @@ public class CustomerResourceV10IntegrationTest {
     @Test
     public void getCustomers() throws Exception {
         Response response = customerListTarget
-                .request(CUSTOMER_V1)
+                .request(CUSTOMER_V2)
                 .get(Response.class);
 
         assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.OK);
@@ -216,41 +161,15 @@ public class CustomerResourceV10IntegrationTest {
         assertThat(customers).hasSize(1);
         assertThat(customers.get(0)).isInstanceOf(JsonObject.class);
         JsonObject customer = (JsonObject)customers.get(0);
-        assertThat(customer).containsAllEntriesOf(parse(getClass().getResourceAsStream("customer_v1_0.json")));
-    }
-
-    @Test
-    public void getCustomersWithJsonType() throws Exception {
-        Response response = customerListTarget
-                .request(APPLICATION_JSON)
-                .get(Response.class);
-
-        assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.OK);
-
-        List<JsonValue> customers = Json.createReader(new StringReader(response.readEntity(String.class))).readArray();
-        
-        assertThat(customers).hasSize(1);
-        assertThat(customers.get(0)).isInstanceOf(JsonObject.class);
-        JsonObject customer = (JsonObject)customers.get(0);
-        assertThat(customer).containsAllEntriesOf(parse(getClass().getResourceAsStream("customer_v1_0.json")));
+        assertThat(customer).containsAllEntriesOf(parse(getClass().getResourceAsStream("customer_v2_0.json")));
     }
 
     @Test
     public void updateCustomer() throws Exception {
         Response response = customerListTarget
                 .path(Long.toString(1))
-                .request(CUSTOMER_V1)
-                .put(entity(getClass().getResourceAsStream("customer_v1_0.json"), CUSTOMER_V1));
-
-        assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.NO_CONTENT);
-    }
-
-    @Test
-    public void updateCustomerWithJsonType() throws Exception {
-        Response response = customerListTarget
-                .path(Long.toString(1))
-                .request(APPLICATION_JSON)
-                .put(entity(getClass().getResourceAsStream("customer_v1_0.json"), CUSTOMER_V1));
+                .request(CUSTOMER_V2)
+                .put(entity(getClass().getResourceAsStream("customer_v2_0.json"), CUSTOMER_V2));
 
         assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.NO_CONTENT);
     }
@@ -259,18 +178,8 @@ public class CustomerResourceV10IntegrationTest {
     public void updateCustomerShouldFailForUnknownCustomer() throws Exception {
         Response response = customerListTarget
                 .path(Long.toString(-1))
-                .request(CUSTOMER_V1)
-                .put(entity(getClass().getResourceAsStream("customer_v1_0.json"), CUSTOMER_V1));
-
-        assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.NOT_FOUND);
-    }
-
-    @Test
-    public void updateCustomerWithJsonTypeShouldFailForUnknownCustomer() throws Exception {
-        Response response = customerListTarget
-                .path(Long.toString(-1))
-                .request(APPLICATION_JSON)
-                .put(entity(getClass().getResourceAsStream("customer_v1_0.json"), CUSTOMER_V1));
+                .request(CUSTOMER_V2)
+                .put(entity(getClass().getResourceAsStream("customer_v2_0.json"), CUSTOMER_V2));
 
         assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.NOT_FOUND);
     }

@@ -40,7 +40,7 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
         license = @License(
                 name = "Apache License, Version 2.0",
                 url = "http://www.apache.org/licenses/LICENSE-2.0"),
-        version = "1",
+        version = "2",
         description = "A customer service"),
     components = @Components(requestBodies = @RequestBody(name = "Customer", content = @Content(schema = @Schema(implementation = CustomerResourceType.class)))))
 public class JaxRsActivator extends Application {

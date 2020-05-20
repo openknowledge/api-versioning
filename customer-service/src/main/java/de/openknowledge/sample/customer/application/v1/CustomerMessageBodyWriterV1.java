@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions
  * and limitations under the License.
  */
-package de.openknowledge.sample.customer.application;
+package de.openknowledge.sample.customer.application.v1;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.stream.Stream;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
-import javax.enterprise.util.AnnotationLiteral;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -32,14 +32,17 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 
+import de.openknowledge.sample.customer.application.CustomMediaType;
+import de.openknowledge.sample.customer.application.CustomerResourceType;
+
 /**
  * Message body reader that transforms an entity of {@link CustomerResourceType}
- * to media type 'application/vnd.de.openknowledge.sample.customer.v2+json'.
+ * to media type 'application/vnd.de.openknowledge.sample.customer.v1+json'.
  */
 @Provider
 @RequestScoped
-@Produces(CustomMediaType.CUSTOMER_V2)
-public class CustomerMessageBodyWriter implements MessageBodyWriter<CustomerResourceType> {
+@Produces({CustomMediaType.CUSTOMER_V1, MediaType.APPLICATION_JSON})
+public class CustomerMessageBodyWriterV1 implements MessageBodyWriter<CustomerResourceType> {
 
     @Context
     private Providers providers;
@@ -47,7 +50,7 @@ public class CustomerMessageBodyWriter implements MessageBodyWriter<CustomerReso
     @Override
     public boolean isWriteable(Class<?> type, Type genericType,
                                Annotation[] annotations, MediaType mediaType) {
-        return type == CustomerResourceType.class;
+        return type == CustomerResourceType.class && Stream.of(annotations).noneMatch(a -> a.annotationType().equals(Default.class));
     }
 
     @Override
@@ -68,28 +71,20 @@ public class CustomerMessageBodyWriter implements MessageBodyWriter<CustomerReso
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream
     ) throws IOException, WebApplicationException {
-
-        MessageBodyWriter<CustomerResourceType> jsonWriter
+        MessageBodyWriter<CustomerResourceTypeV1> jsonWriter
                 = providers.getMessageBodyWriter(
-                CustomerResourceType.class,
-                CustomerResourceType.class,
-                addDefaultAnnotation(annotations),
+                CustomerResourceTypeV1.class,
+                CustomerResourceTypeV1.class,
+                annotations,
                 MediaType.APPLICATION_JSON_TYPE);
 
         jsonWriter.writeTo(
-                customerResourceType,
-                CustomerResourceType.class,
-                CustomerResourceType.class,
+                new CustomerResourceTypeV1(customerResourceType),
+                CustomerResourceTypeV1.class,
+                CustomerResourceTypeV1.class,
                 annotations,
                 MediaType.APPLICATION_JSON_TYPE,
                 httpHeaders,
                 entityStream);
-    }
-
-    private Annotation[] addDefaultAnnotation(Annotation[] annotations) {
-        Annotation[] newAnnotations = new Annotation[annotations.length + 1];
-        System.arraycopy(annotations, 0, newAnnotations, 1, annotations.length);
-        newAnnotations[0] = new AnnotationLiteral<Default>() {};
-        return newAnnotations;
     }
 }

@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions
  * and limitations under the License.
  */
-package de.openknowledge.sample.customer.application;
+package de.openknowledge.sample.customer.application.v1;
 
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import java.util.Optional;
 
+import de.openknowledge.sample.customer.application.CustomerResourceType;
 import de.openknowledge.sample.customer.domain.Customer;
 import de.openknowledge.sample.customer.domain.Gender;
 import de.openknowledge.sample.customer.domain.Name;
@@ -24,38 +25,44 @@ import de.openknowledge.sample.customer.domain.Name;
 /**
  * An DTO that represents a {@link Customer}.
  */
-@Schema(name = "Customer")
-public class CustomerResourceType {
+public class CustomerResourceTypeV1 {
 
-    @Schema(readOnly = true)
     private Long id;
 
-    @Schema
     private Name name;
 
     private String emailAddress;
 
     private Gender gender;
 
-    public CustomerResourceType() {
+    public CustomerResourceTypeV1() {
     }
 
-    public CustomerResourceType(Customer customer) {
+    public CustomerResourceTypeV1(CustomerResourceType customer) {
         this.id = customer.getId();
         this.name = customer.getName();
         this.emailAddress = customer.getEmailAddress();
         this.gender = customer.getGender();
     }
 
-    public CustomerResourceType(Long id, Name name, String emailAddress, Gender gender) {
-        this.id = id;
-        this.name = name;
-        this.emailAddress = emailAddress;
-        this.gender = gender;
-    }
-
     public Long getId() {
         return id;
+    }
+
+    public String getFirstName() {
+        return Optional.ofNullable(name).map(Name::getFirstName).orElse(null);
+    }
+
+    public void setFirstName(String firstName) {
+        (name = Optional.ofNullable(name).orElse(new Name())).setFirstName(firstName);
+    }
+
+    public String getLastName() {
+        return Optional.ofNullable(name).map(Name::getLastName).orElse(null);
+    }
+
+    public void setLastName(String lastName) {
+        (name = Optional.ofNullable(name).orElse(new Name())).setLastName(lastName);
     }
 
     public Name getName() {
@@ -80,6 +87,10 @@ public class CustomerResourceType {
 
     public void setGender(Gender gender) {
         this.gender = gender;
+    }
+
+    public CustomerResourceType toV2() {
+        return new CustomerResourceType(id, name, emailAddress, gender);
     }
 
     @Override
