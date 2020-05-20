@@ -58,9 +58,10 @@ public class CustomerResource {
     private CustomerRepository repository;
 
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes({ MediaType.APPLICATION_JSON, CustomMediaType.CUSTOMER_V1 })
     @RequestBody(name = "Customer", content = {
             @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = CustomerResourceType.class)),
+            @Content(mediaType = CustomMediaType.CUSTOMER_V1, schema = @Schema(implementation = CustomerResourceType.class)),
     })
     public Response createCustomer(CustomerResourceType customer, @Context UriInfo uriInfo) {
         LOG.log(Level.INFO, "Create customer {0}", customer);
@@ -98,7 +99,7 @@ public class CustomerResource {
 
     @GET
     @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({ MediaType.APPLICATION_JSON, CustomMediaType.CUSTOMER_V1 })
     public CustomerResourceType getCustomer(@PathParam("id") Long customerId) {
         LOG.log(Level.INFO, "Find customer with id {0}", customerId);
 
@@ -116,7 +117,7 @@ public class CustomerResource {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({ MediaType.APPLICATION_JSON, CustomMediaType.CUSTOMER_V1 })
     public List<CustomerResourceType> getCustomers() {
         LOG.info("Find all customers");
 
@@ -130,9 +131,10 @@ public class CustomerResource {
 
     @PUT
     @Path("/{id}")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes({ MediaType.APPLICATION_JSON, CustomMediaType.CUSTOMER_V1 })
     @RequestBody(name = "Customer", content = {
-            @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = CustomerResourceType.class))
+            @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = CustomerResourceType.class)),
+            @Content(mediaType = CustomMediaType.CUSTOMER_V1, schema = @Schema(implementation = CustomerResourceType.class)),
     })
     public Response updateCustomer(@PathParam("id") Long customerId, CustomerResourceType modifiedCustomer) {
         LOG.log(Level.INFO, "Update customer with id {0}", customerId);
