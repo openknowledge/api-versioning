@@ -1,0 +1,8 @@
+{
+  "name": {
+    "firstName": "Max",
+    "lastName": "Mustermann"
+  },
+  "emailAddress": "max.mustermann@openknowledge.de",
+  "gender": "MALE"
+}
