@@ -15,9 +15,12 @@
  */
 package de.openknowledge.sample.customer.domain;
 
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 /**
  * A value object that represents a name.
  */
+@Schema(name = "CustomerName")
 public class Name {
 
     private String firstName;

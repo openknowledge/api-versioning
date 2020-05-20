@@ -60,9 +60,9 @@ import de.openknowledge.sample.customer.domain.TestCustomers;
  */
 @RunAsClient
 @RunWith(Arquillian.class)
-public class CustomerResourceIntegrationTest {
+public class CustomerResourceV11IntegrationTest {
 
-    private static final Logger LOG = Logger.getLogger(CustomerResourceIntegrationTest.class.getName());
+    private static final Logger LOG = Logger.getLogger(CustomerResourceV11IntegrationTest.class.getName());
 
     @Deployment
     public static WebArchive createDeployment() {
@@ -95,7 +95,7 @@ public class CustomerResourceIntegrationTest {
     public void createCustomer() throws Exception {
         Response response = customerListTarget
                 .request(APPLICATION_JSON)
-                .post(entity(getClass().getResourceAsStream("customer_v1_0.json"), APPLICATION_JSON));
+                .post(entity(getClass().getResourceAsStream("customer_v1_1.json"), APPLICATION_JSON));
 
         assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.CREATED);
         assertThat(response.getLocation()).isEqualTo(customerListTarget.path(Long.toString(2)).getUri());
@@ -132,7 +132,7 @@ public class CustomerResourceIntegrationTest {
 
         JsonObject customer = parse(response.readEntity(String.class));
         assertThat(customer).isNotNull();
-        assertThat(customer).containsAllEntriesOf(parse(getClass().getResourceAsStream("customer_v1_0.json")));
+        assertThat(customer).containsAllEntriesOf(parse(getClass().getResourceAsStream("customer_v1_1.json")));
     }
 
     @Test
@@ -158,7 +158,7 @@ public class CustomerResourceIntegrationTest {
         assertThat(customers).hasSize(1);
         assertThat(customers.get(0)).isInstanceOf(JsonObject.class);
         JsonObject customer = (JsonObject)customers.get(0);
-        assertThat(customer).containsAllEntriesOf(parse(getClass().getResourceAsStream("customer_v1_0.json")));
+        assertThat(customer).containsAllEntriesOf(parse(getClass().getResourceAsStream("customer_v1_1.json")));
     }
 
     @Test
@@ -166,7 +166,7 @@ public class CustomerResourceIntegrationTest {
         Response response = customerListTarget
                 .path(Long.toString(1))
                 .request(APPLICATION_JSON)
-                .put(entity(getClass().getResourceAsStream("customer_v1_0.json"), APPLICATION_JSON));
+                .put(entity(getClass().getResourceAsStream("customer_v1_1.json"), APPLICATION_JSON));
 
         assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.NO_CONTENT);
     }
@@ -176,7 +176,7 @@ public class CustomerResourceIntegrationTest {
         Response response = customerListTarget
                 .path(Long.toString(-1))
                 .request(APPLICATION_JSON)
-                .put(entity(getClass().getResourceAsStream("customer_v1_0.json"), APPLICATION_JSON));
+                .put(entity(getClass().getResourceAsStream("customer_v1_1.json"), APPLICATION_JSON));
 
         assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.NOT_FOUND);
     }

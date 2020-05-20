@@ -15,10 +15,13 @@
  */
 package de.openknowledge.sample.customer.application;
 
+import java.util.Optional;
+
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import de.openknowledge.sample.customer.domain.Customer;
 import de.openknowledge.sample.customer.domain.Gender;
+import de.openknowledge.sample.customer.domain.Name;
 
 /**
  * An DTO that represents a {@link Customer}.
@@ -29,9 +32,7 @@ public class CustomerResourceType {
     @Schema(readOnly = true)
     private Long id;
 
-    private String firstName;
-
-    private String lastName;
+    private Name name;
 
     private String emailAddress;
 
@@ -42,8 +43,7 @@ public class CustomerResourceType {
 
     public CustomerResourceType(Customer customer) {
         this.id = customer.getId();
-        this.firstName = customer.getName().getFirstName();
-        this.lastName = customer.getName().getLastName();
+        this.name = customer.getName();
         this.emailAddress = customer.getEmailAddress();
         this.gender = customer.getGender();
     }
@@ -52,20 +52,36 @@ public class CustomerResourceType {
         return id;
     }
 
+    public Name getName() {
+    	return name;
+    }
+
+    public void setName(Name name) {
+    	this.name = name;
+    }
+
+    @Schema(deprecated = true)
     public String getFirstName() {
-        return firstName;
+        return Optional.ofNullable(name).map(Name::getFirstName).orElse(null);
     }
 
     public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    	if (name == null) {
+    		name = new Name();
+    	}
+    	name.setFirstName(firstName);
     }
 
+    @Schema(deprecated = true)
     public String getLastName() {
-        return lastName;
+        return Optional.ofNullable(name).map(Name::getLastName).orElse(null);
     }
 
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+    	if (name == null) {
+    		name = new Name();
+    	}
+    	name.setLastName(lastName);
     }
 
     public String getEmailAddress() {
@@ -88,8 +104,7 @@ public class CustomerResourceType {
     public String toString() {
         return "CustomerResourceType{" +
                 "id=" + id +
-                ", firstName=" + firstName +
-                ", lastName=" + lastName +
+                ", name=" + name +
                 ", emailAddress='" + emailAddress + '\'' +
                 ", gender=" + gender +
                 '}';
