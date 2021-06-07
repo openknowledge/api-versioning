@@ -19,6 +19,7 @@
   </properties>
 
   <build>
+    <finalName>customer-service</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -29,6 +30,31 @@
         <groupId>org.apache.meecrowave</groupId>
         <artifactId>meecrowave-maven-plugin</artifactId>
         <version>${meecrowave.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-runner</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.meecrowave</groupId>
+                  <artifactId>meecrowave-core</artifactId>
+                  <version>${meecrowave.version}</version>
+                  <classifier>runner</classifier>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.build.directory}/runner</outputDirectory>
+              <stripVersion>true</stripVersion>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
