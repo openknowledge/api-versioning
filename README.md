@@ -1,5 +1,5 @@
-# Api Versioning
-Showcase to demonstrate the implementation of backward-compatible APIs and versioning
+# Optimistic Locking with REST
+Showcase to demonstrate the implementation of optimistic locking with JAX-RS.
 
 ## Run via Docker
 Run
@@ -19,6 +19,3 @@ mvn package meecrowave:run
 ## Accessing the UI
 After the server is running, you can access the Swagger UI at
 http://localhost:8080/index.html
-
-The sample was used during a webinar of open knowledge GmbH.
-The recording (in german) can be found here: https://youtu.be/4y6VJOq9jSY
