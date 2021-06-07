@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -50,6 +51,7 @@ import de.openknowledge.sample.customer.domain.Name;
  * A resource that provides access to the {@link Customer} entity.
  */
 @Path("customers")
+@ApplicationScoped
 public class CustomerResource {
 
     private static final Logger LOG = Logger.getLogger(CustomerResource.class.getName());

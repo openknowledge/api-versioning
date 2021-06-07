@@ -15,6 +15,7 @@
  */
 package de.openknowledge.sample.customer.application;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
@@ -31,6 +32,7 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
  * JAX-RS Activator
  */
 @ApplicationPath("api")
+@ApplicationScoped
 @OpenAPIDefinition(info = @Info(
         title = "Customer Service",
         contact = @Contact(
