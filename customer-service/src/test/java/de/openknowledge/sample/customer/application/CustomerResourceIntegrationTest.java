@@ -19,16 +19,10 @@ import static javax.ws.rs.client.Entity.entity;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.InputStream;
-import java.io.StringReader;
-import java.util.List;
-import java.util.logging.Logger;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonValue;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -56,102 +50,42 @@ public class CustomerResourceIntegrationTest {
                 .target("http://localhost:" + config.getHttpPort())
                 .path("api/customers");
     }
-    
-    @Test
-    public void createCustomer() throws Exception {
-        Response response = customerListTarget
-                .request(APPLICATION_JSON)
-                .post(entity(getClass().getResourceAsStream("customer_v1_0.json"), APPLICATION_JSON));
-
-        assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.CREATED);
-        assertThat(response.getLocation()).isEqualTo(customerListTarget.path(Long.toString(2)).getUri());
-    }
 
     @Test
-    public void deleteCustomerV1() throws Exception {
+    public void updateCustomerWithoutEtagFails() throws Exception {
         Response response = customerListTarget
                 .path(Long.toString(1))
                 .request(APPLICATION_JSON)
-                .delete();
+                .put(entity(getClass().getResourceAsStream("customer_v1_0.json"), APPLICATION_JSON));
 
-        assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.NO_CONTENT);
+        assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.PRECONDITION_REQUIRED);
     }
 
     @Test
-    public void deleteCustomerV1ShouldFailUnknownCustomer() throws Exception {
+    public void updateCustomerWithWrongEtagFails() throws Exception {
         Response response = customerListTarget
-                .path(Long.toString(-1))
+                .path(Long.toString(1))
                 .request(APPLICATION_JSON)
-                .delete();
+                .header(HttpHeaders.IF_MATCH, "wrong")
+                .put(entity(getClass().getResourceAsStream("customer_v1_0.json"), APPLICATION_JSON));
 
-        assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.NOT_FOUND);
+        assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.PRECONDITION_FAILED);
     }
 
     @Test
-    public void getCustomer() throws Exception {
-        Response response = customerListTarget
+    public void updateCustomerWithCorrectEtag() throws Exception {
+        Response oldCustomer = customerListTarget
                 .path(Long.toString(1))
                 .request(APPLICATION_JSON)
                 .get();
+        EntityTag oldCustomerTag = oldCustomer.getEntityTag();
 
-        assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.OK);
-
-        JsonObject customer = parse(response.readEntity(String.class));
-        assertThat(customer).isNotNull();
-        assertThat(customer).containsAllEntriesOf(parse(getClass().getResourceAsStream("customer_v1_0.json")));
-    }
-
-    @Test
-    public void getCustomerV1ShouldFailForUnknownCustomer() throws Exception {
-        Response response = customerListTarget
-                .path(Long.toString(-1))
-                .request(APPLICATION_JSON)
-                .get(Response.class);
-
-        assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.NOT_FOUND);
-    }
-
-    @Test
-    public void getCustomers() throws Exception {
-        Response response = customerListTarget
-                .request(APPLICATION_JSON)
-                .get(Response.class);
-
-        assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.OK);
-
-        List<JsonValue> customers = Json.createReader(new StringReader(response.readEntity(String.class))).readArray();
-        
-        assertThat(customers).hasSize(1);
-        assertThat(customers.get(0)).isInstanceOf(JsonObject.class);
-        JsonObject customer = (JsonObject)customers.get(0);
-        assertThat(customer).containsAllEntriesOf(parse(getClass().getResourceAsStream("customer_v1_0.json")));
-    }
-
-    @Test
-    public void updateCustomer() throws Exception {
         Response response = customerListTarget
                 .path(Long.toString(1))
                 .request(APPLICATION_JSON)
+                .header(HttpHeaders.IF_MATCH, oldCustomerTag)
                 .put(entity(getClass().getResourceAsStream("customer_v1_0.json"), APPLICATION_JSON));
 
         assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.NO_CONTENT);
-    }
-
-    @Test
-    public void updateCustomerShouldFailForUnknownCustomer() throws Exception {
-        Response response = customerListTarget
-                .path(Long.toString(-1))
-                .request(APPLICATION_JSON)
-                .put(entity(getClass().getResourceAsStream("customer_v1_0.json"), APPLICATION_JSON));
-
-        assertThat(response.getStatusInfo().toEnum()).isEqualTo(Status.NOT_FOUND);
-    }
-
-    private JsonObject parse(String json) {
-        return Json.createReader(new StringReader(json)).readObject();
-    }
-
-    private JsonObject parse(InputStream json) {
-        return Json.createReader(json).readObject();
     }
 }
