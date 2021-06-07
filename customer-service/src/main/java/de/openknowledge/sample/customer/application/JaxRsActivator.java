@@ -27,6 +27,7 @@ import org.eclipse.microprofile.openapi.annotations.info.License;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.eclipse.microprofile.openapi.annotations.servers.Server;
 
 /**
  * JAX-RS Activator
@@ -44,6 +45,7 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
                 url = "http://www.apache.org/licenses/LICENSE-2.0"),
         version = "1",
         description = "A customer service"),
+        servers = @Server(url = "http://localhost:8080/api"),
     components = @Components(requestBodies = @RequestBody(name = "Customer", content = @Content(schema = @Schema(implementation = CustomerResourceType.class)))))
 public class JaxRsActivator extends Application {
 
