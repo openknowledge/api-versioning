@@ -4,7 +4,7 @@ WORKDIR /usr/src/customer-service
 COPY pom.xml ./
 RUN mvn package dependency:go-offline # cache dependencies
 COPY src ./src
-RUN mvn clean package
+RUN mvn clean package -DskipTests
 
 FROM openjdk:11
 
