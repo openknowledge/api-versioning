@@ -23,7 +23,7 @@ paths:
               schema:
                 type: "object"
                 $ref: "#/components/schemas/Customer"
-            application/vnd.ok.customer.v1+json:
+            application/vnd.de.openknowledge.sample.customer.v1+json:
               schema:
                 type: "object"
                 $ref: "#/components/schemas/Customer"
@@ -34,7 +34,7 @@ paths:
               schema:
                 type: "object"
                 $ref: "#/components/schemas/Customer"
-            application/vnd.ok.customer.v1+json:
+            application/vnd.de.openknowledge.sample.customer.v1+json:
               schema:
                 type: "object"
                 $ref: "#/components/schemas/Customer"
@@ -76,7 +76,7 @@ paths:
           type: "integer"
       requestBody:
         content:
-          application/vnd.ok.customer.v1+json:
+          application/vnd.de.openknowledge.sample.customer.v1+json:
             schema:
               type: "object"
               $ref: "#/components/schemas/Customer"
@@ -124,7 +124,7 @@ paths:
                   type: "object"
                   $ref: "#/components/schemas/Customer"
                 type: "array"
-            application/vnd.ok.customer.v1+json:
+            application/vnd.de.openknowledge.sample.customer.v1+json:
               schema:
                 items:
                   type: "object"
@@ -139,7 +139,7 @@ paths:
                   type: "object"
                   $ref: "#/components/schemas/Customer"
                 type: "array"
-            application/vnd.ok.customer.v1+json:
+            application/vnd.de.openknowledge.sample.customer.v1+json:
               schema:
                 items:
                   type: "object"
@@ -169,7 +169,7 @@ paths:
       parameters: []
       requestBody:
         content:
-          application/vnd.ok.customer.v1+json:
+          application/vnd.de.openknowledge.sample.customer.v1+json:
             schema:
               type: "object"
               $ref: "#/components/schemas/Customer"
