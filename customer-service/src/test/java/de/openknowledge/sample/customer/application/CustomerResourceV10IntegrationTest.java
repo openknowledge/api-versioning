@@ -22,10 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.InputStream;
 import java.io.StringReader;
-import java.net.URL;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -36,62 +33,27 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.johnzon.jaxrs.jsonb.jaxrs.JsonbJaxrsProvider;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import de.openknowledge.sample.customer.application.v1.CustomerResourceTypeV1;
-import de.openknowledge.sample.customer.domain.Customer;
-import de.openknowledge.sample.customer.domain.CustomerNotFoundException;
-import de.openknowledge.sample.customer.domain.CustomerRepository;
-import de.openknowledge.sample.customer.domain.Gender;
-import de.openknowledge.sample.customer.domain.Name;
-import de.openknowledge.sample.customer.domain.TestCustomers;
+import org.apache.meecrowave.Meecrowave;
+import org.apache.meecrowave.junit5.MonoMeecrowaveConfig;
+import org.apache.meecrowave.testing.ConfigurationInject;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
- * Arquillian test class for the rest resource {@link CustomerResource}.
+ * test class for the rest resource {@link CustomerResource}.
  */
-@RunAsClient
-@RunWith(Arquillian.class)
+@MonoMeecrowaveConfig
 public class CustomerResourceV10IntegrationTest {
 
-    private static final Logger LOG = Logger.getLogger(CustomerResourceV10IntegrationTest.class.getName());
-
-    @Deployment
-    public static WebArchive createDeployment() {
-        PomEquippedResolveStage pomFile = Maven.resolver().loadPomFromFile("pom.xml");
-
-        WebArchive archive = ShrinkWrap.create(WebArchive.class)
-                .addAsLibraries(pomFile.resolve("org.apache.commons:commons-lang3").withTransitivity().asFile())
-                .addPackage(CustomerResourceTypeV1.class.getPackage())
-                .addClasses(CustomerResource.class, CustomerResourceType.class, CustomMediaType.class, JaxRsActivator.class)
-                .addClasses(CustomerMessageBodyReader.class, CustomerMessageBodyWriter.class, CustomerListMessageBodyWriter.class)
-                .addClasses(Customer.class, Name.class, CustomerRepository.class, CustomerNotFoundException.class, Gender.class)
-                .addClass(TestCustomers.class)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-
-        LOG.log(Level.FINE, () -> archive.toString(true));
-        return archive;
-    }
-
-    @ArquillianResource
-    private URL baseURI;
+    @ConfigurationInject
+    private Meecrowave.Builder config;
     private WebTarget customerListTarget;
 
-    @Before
+    @BeforeEach
     public void initializeClient() {
         customerListTarget = ClientBuilder.newClient()
                 .register(JsonbJaxrsProvider.class)
-                .target(baseURI.toString())
+                .target("http://localhost:" + config.getHttpPort())
                 .path("api/customers");
     }
     

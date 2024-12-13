@@ -20,7 +20,7 @@ package de.openknowledge.sample.customer.application;
  */
 public final class CustomMediaType {
 
-    public static final String CUSTOMER_V1 = "application/vnd.de.openknowledge.sample.customer.v1+json2";
-    public static final String CUSTOMER_V2 = "application/vnd.de.openknowledge.sample.customer.v2+json2";
+    public static final String CUSTOMER_V1 = "application/vnd.de.openknowledge.sample.customer.v1+json";
+    public static final String CUSTOMER_V2 = "application/vnd.de.openknowledge.sample.customer.v2+json";
 
 }

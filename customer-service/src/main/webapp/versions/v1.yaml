@@ -184,8 +184,10 @@ components:
       properties:
         firstName:
           type: "string"
+          deprecated: true
         lastName:
           type: "string"
+          deprecated: true
         emailAddress:
           type: "string"
         gender:
